@@ -22,24 +22,51 @@ public class LexicalAnalyzer {
     public static List<Token> tokenize(String code) {
         List<Token> tokens = new ArrayList<>();
         int lineNumber = 1;
+        int commentStart = 0;
+        int commentEnd = 0;
         String lastDatatype = null;  // Track the last found datatype
+        List<int[]> multiLineCommentRanges = new ArrayList<>();
 
-        // Remove and handle multi-line comments FIRST
-        Matcher commentMatcher = Pattern.compile("/\\*[\\s\\S]*?\\*/").matcher(code);
-        while (commentMatcher.find()) {
-            tokens.add(new Token("COMMENT", commentMatcher.group(), lineNumber));
-            code = code.replace(commentMatcher.group(), " "); // Remove comment from code
+        // Process multi-line comments within the loop
+        Pattern multiLineCommentPattern = Pattern.compile("/\\*([\\s\\S]*?)\\*/", Pattern.MULTILINE);
+        Matcher multiLineMatcher = multiLineCommentPattern.matcher(code);
+
+        while (multiLineMatcher.find()) {
+            String comment = multiLineMatcher.group();
+            commentStart = code.substring(0, multiLineMatcher.start()).split("\n").length;
+            commentEnd = code.substring(0, multiLineMatcher.end()).split("\n").length;
+            tokens.add(new Token("COMMENT", comment, commentStart));
+
+            // Store multi-line comment range (start to end line)
+            multiLineCommentRanges.add(new int[]{commentStart, commentEnd});
         }
 
-        for (String line : code.split("\n")) {
+        String[] lines = code.split("\n");
+
+        for (int i = 0; i < lines.length; i++) {
+            boolean inMultiLineComment = false;
+
+            // Check if the current line is within a multi-line comment
+            for (int[] range : multiLineCommentRanges) {
+                if (lineNumber >= range[0] && lineNumber <= range[1]) {
+                    inMultiLineComment = true;
+                    break;
+                }
+            }
+
+            if (inMultiLineComment) {
+                lineNumber++;
+                continue; // Skip processing this line
+            }
+
             int pos = 0;
-            while (pos < line.length()) {
+            while (pos < lines[i].length()) {
                 boolean matched = false;
 
                 for (Map.Entry<String, String> entry : TOKEN_PATTERNS.entrySet()) {
                     String type = entry.getKey();
                     Pattern pattern = Pattern.compile(entry.getValue());
-                    Matcher matcher = pattern.matcher(line.substring(pos));
+                    Matcher matcher = pattern.matcher(lines[i].substring(pos));
 
                     if (matcher.find() && matcher.start() == 0) {
                         String value = matcher.group();
@@ -56,6 +83,8 @@ public class LexicalAnalyzer {
                                 symbolTable.insert(value, lastDatatype);
                                 lastDatatype = null;  // Reset after assignment
                             }
+                        } else if (type.equals("COMMENT")) {
+                            tokens.add(new Token("COMMENT", value, lineNumber));
                         }
 
                         pos += value.length();
@@ -65,7 +94,7 @@ public class LexicalAnalyzer {
                 }
 
                 if (!matched) {
-                    System.out.println("Error: Unrecognized token at line " + lineNumber + " near: " + line.charAt(pos));
+                    System.out.println("Error: Unrecognized token at line " + lineNumber + " near: " + lines[i].charAt(pos));
                     pos++;
                 }
             }
@@ -74,4 +103,5 @@ public class LexicalAnalyzer {
 
         return tokens;
     }
+
 }
