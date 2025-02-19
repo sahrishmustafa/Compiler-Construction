@@ -1,5 +1,5 @@
-package example_1;
-//package cc_assignment;
+//package example_1;
+package cc_assignment;
 import java.util.*;
 import java.util.regex.*;
 import dk.brics.automaton.*;
@@ -16,7 +16,8 @@ public class LexicalAnalyzer {
         TOKEN_PATTERNS.put("DECIMAL", "\\b\\d+\\.\\d{1,5}\\b");  
         TOKEN_PATTERNS.put("INTEGER", "\\b\\d+\\b");
         TOKEN_PATTERNS.put("CHARACTER", "'(.)'");  
-        TOKEN_PATTERNS.put("OPERATOR", "\\b(eq|add|sub|mul|div|powow|mod)\\b");  
+        TOKEN_PATTERNS.put("OPERATOR", "\\b(eq|add|sub|mul|div|powow|mod)\\b");
+        TOKEN_PATTERNS.put("FUNCTION", "(come.|go.)");        
         TOKEN_PATTERNS.put("IDENTIFIER", "_[a-z]+_");
         TOKEN_PATTERNS.put("BRACKET", "[(){};,]");
         TOKEN_PATTERNS.put("WHITESPACE", "\\s+");  
