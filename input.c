@@ -1,11 +1,20 @@
-int x = 10;
-float y = 3.14159;
-bool isactive = true;
-/* Multi-line
-   comment */
-x = x + 2 * 5;
-char letter = 'a';
-// This is a comment
-y = x ^ 2;
-/* Multi-line
-   comment */
+
+digit _main_(){
+
+	@ This is a comment
+	@many@
+	   This is a
+	   multi-line comment.
+	@many@
+
+	digit _var_ eq 42;
+	decimal _pi_ eq 3.14159;
+	zeroone _flag_ eq true;
+	abc _letter_ eq 'A';
+
+	digit _x_ add _y_;
+	digit _result_ eq _x_ powow _y_;
+
+	{ ; }
+
+}

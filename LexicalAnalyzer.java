@@ -1,20 +1,22 @@
 package example_1;
 import java.util.*;
 import java.util.regex.*;
+import dk.brics.automaton.*;
 
 public class LexicalAnalyzer {
     private static final Map<String, String> TOKEN_PATTERNS = new LinkedHashMap<>();
     public static SymbolTable symbolTable = new SymbolTable(); // Symbol Table
 
     static {
-        TOKEN_PATTERNS.put("COMMENT", "//.*|/\\*[\\s\\S]*?\\*/");  // Ensure this is checked first
-        TOKEN_PATTERNS.put("DATATYPE", "\\b(int|float|bool|char)\\b");
+        TOKEN_PATTERNS.put("COMMENT", "@.*");  // Single-line comments using @
+        TOKEN_PATTERNS.put("MULTILINE_COMMENT", "@many@([\\s\\S]*?)@many@");  // Multi-line comments
+        TOKEN_PATTERNS.put("DATATYPE", "\\b(digit|decimal|zeroone|abc)\\b");
         TOKEN_PATTERNS.put("BOOLEAN", "\\b(true|false)\\b");
         TOKEN_PATTERNS.put("DECIMAL", "\\b\\d+\\.\\d{1,5}\\b");  // Max 5 decimal places
         TOKEN_PATTERNS.put("INTEGER", "\\b\\d+\\b");
-        TOKEN_PATTERNS.put("CHARACTER", "'(.)'");  // Allow any character inside single quotes
-        TOKEN_PATTERNS.put("IDENTIFIER", "\\b[a-z]+\\b");
-        TOKEN_PATTERNS.put("OPERATOR", "[+\\-=*/%^]");
+        TOKEN_PATTERNS.put("CHARACTER", "'(.)'");  // Single character inside single quotes
+        TOKEN_PATTERNS.put("OPERATOR", "\\b(eq|add|sub|mul|div|powow|mod)\\b");  // Operators in new language
+        TOKEN_PATTERNS.put("IDENTIFIER", "_[a-z]+_");
         TOKEN_PATTERNS.put("BRACKET", "[(){};,]");
         TOKEN_PATTERNS.put("WHITESPACE", "\\s+");  // Ignored
     }
@@ -22,31 +24,26 @@ public class LexicalAnalyzer {
     public static List<Token> tokenize(String code) {
         List<Token> tokens = new ArrayList<>();
         int lineNumber = 1;
-        int commentStart = 0;
-        int commentEnd = 0;
-        String lastDatatype = null;  // Track the last found datatype
         List<int[]> multiLineCommentRanges = new ArrayList<>();
+        String lastDatatype = null;
 
-        // Process multi-line comments within the loop
-        Pattern multiLineCommentPattern = Pattern.compile("/\\*([\\s\\S]*?)\\*/", Pattern.MULTILINE);
+        // Process multi-line comments first
+        Pattern multiLineCommentPattern = Pattern.compile("@many@([\\s\\S]*?)@many@", Pattern.MULTILINE);
         Matcher multiLineMatcher = multiLineCommentPattern.matcher(code);
 
         while (multiLineMatcher.find()) {
             String comment = multiLineMatcher.group();
-            commentStart = code.substring(0, multiLineMatcher.start()).split("\n").length;
-            commentEnd = code.substring(0, multiLineMatcher.end()).split("\n").length;
-            tokens.add(new Token("COMMENT", comment, commentStart));
-
-            // Store multi-line comment range (start to end line)
+            int commentStart = code.substring(0, multiLineMatcher.start()).split("\\n").length;
+            int commentEnd = code.substring(0, multiLineMatcher.end()).split("\\n").length;
+            tokens.add(new Token("MULTILINE_COMMENT", comment, commentStart));
             multiLineCommentRanges.add(new int[]{commentStart, commentEnd});
         }
 
-        String[] lines = code.split("\n");
+        String[] lines = code.split("\\n");
 
         for (int i = 0; i < lines.length; i++) {
             boolean inMultiLineComment = false;
 
-            // Check if the current line is within a multi-line comment
             for (int[] range : multiLineCommentRanges) {
                 if (lineNumber >= range[0] && lineNumber <= range[1]) {
                     inMultiLineComment = true;
@@ -56,7 +53,18 @@ public class LexicalAnalyzer {
 
             if (inMultiLineComment) {
                 lineNumber++;
-                continue; // Skip processing this line
+                continue;
+            }
+
+            // Check for single-line comments before processing the rest of the line
+            Pattern commentPattern = Pattern.compile("@.*");
+            Matcher commentMatcher = commentPattern.matcher(lines[i]);
+
+            if (commentMatcher.find()) {
+                String comment = commentMatcher.group();
+                tokens.add(new Token("COMMENT", comment, lineNumber));
+                lineNumber++;
+                continue; // Skip processing other tokens in this line
             }
 
             int pos = 0;
@@ -66,27 +74,22 @@ public class LexicalAnalyzer {
                 for (Map.Entry<String, String> entry : TOKEN_PATTERNS.entrySet()) {
                     String type = entry.getKey();
                     Pattern pattern = Pattern.compile(entry.getValue());
-                    Matcher matcher = pattern.matcher(lines[i].substring(pos));
+                    String check = lines[i].substring(pos);
+                    Matcher matcher = pattern.matcher(check);
 
                     if (matcher.find() && matcher.start() == 0) {
                         String value = matcher.group();
-
-                        if (!type.equals("WHITESPACE") && !type.equals("COMMENT")) {
+                        
+                        if (!type.equals("WHITESPACE")) {
                             tokens.add(new Token(type, value, lineNumber));
 
-                            // If a datatype is found, store it for the next identifier
                             if (type.equals("DATATYPE")) {
                                 lastDatatype = value;
-                            } 
-                            // If an identifier follows a datatype, add it to the symbol table
-                            else if (type.equals("IDENTIFIER") && lastDatatype != null) {
+                            } else if (type.equals("IDENTIFIER") && lastDatatype != null) {
                                 symbolTable.insert(value, lastDatatype);
-                                lastDatatype = null;  // Reset after assignment
+                                lastDatatype = null;
                             }
-                        } else if (type.equals("COMMENT")) {
-                            tokens.add(new Token("COMMENT", value, lineNumber));
                         }
-
                         pos += value.length();
                         matched = true;
                         break;
@@ -100,8 +103,28 @@ public class LexicalAnalyzer {
             }
             lineNumber++;
         }
-
         return tokens;
-    }
+     }
 
+    
+    public static void displayDFAForTokens() {
+        System.out.println("\nDFA Representation for Each Token Type:");
+        for (Map.Entry<String, String> entry : TOKEN_PATTERNS.entrySet()) {
+            String tokenType = entry.getKey();
+            String regex = entry.getValue();
+            
+//            if (tokenType.contentEquals("COMMENT") || tokenType.contentEquals("MULTILINE_COMMENT")) {
+//            	continue;
+//            }
+            
+            String automatonRegex = Conversion.convertToAutomatonRegex(regex);
+            RegExp re = new RegExp(automatonRegex);
+            Automaton dfa = re.toAutomaton();
+            dfa.determinize();
+            dfa.minimize();
+            
+            System.out.println("\nToken Type: " + tokenType);
+            Conversion.printDFAStates(dfa);
+        }
+    }
 }

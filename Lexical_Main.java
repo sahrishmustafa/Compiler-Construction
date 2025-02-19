@@ -7,18 +7,19 @@ public class Lexical_Main {
     public static void main(String[] args) {
         String filePath = "E:\\semester 6\\cc\\Coding stuff booo\\ass1\\src\\example_1\\input.c"; // 🔹 File containing source code
         try {
-            // ✅ Read file content into a string
+            // Read file content into a string
             String input = Files.readString(Path.of(filePath));
 
-            // ✅ Tokenize file contents
+            // Tokenize file contents
             List<Token> tokens = LexicalAnalyzer.tokenize(input);
 
-            // ✅ Display Tokens
+            // Display Tokens
             System.out.println("\n-- Tokenized Output --");
             tokens.forEach(System.out::println);
 
-            // ✅ Display Symbol Table
+            // Display Symbol Table
             LexicalAnalyzer.symbolTable.display();
+            LexicalAnalyzer.displayDFAForTokens();
             
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
