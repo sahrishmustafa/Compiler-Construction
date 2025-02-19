@@ -14,7 +14,8 @@ digit _main_(){
 
 	digit _x_ add _y_;
 	digit _result_ eq _x_ powow _y_;
-
+	come._d_;
+	go._y_;
 	{ ; }
 
 }
