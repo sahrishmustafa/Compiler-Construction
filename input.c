@@ -10,7 +10,7 @@ digit _main_(){
 	digit _var_ eq 42;
 	decimal _pi_ eq 3.14159;
 	zeroone _flag_ eq true;
-	abc _letter_ eq 'A';
+	abc _letter_  eq 'A';
 
 	digit _x_ add _y_;
 	digit _result_ eq _x_ powow _y_;

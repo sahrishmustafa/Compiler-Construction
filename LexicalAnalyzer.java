@@ -1,4 +1,5 @@
 package example_1;
+//package cc_assignment;
 import java.util.*;
 import java.util.regex.*;
 import dk.brics.automaton.*;
@@ -8,17 +9,17 @@ public class LexicalAnalyzer {
     public static SymbolTable symbolTable = new SymbolTable(); // Symbol Table
 
     static {
-        TOKEN_PATTERNS.put("COMMENT", "@.*");  // Single-line comments using @
-        TOKEN_PATTERNS.put("MULTILINE_COMMENT", "@many@([\\s\\S]*?)@many@");  // Multi-line comments
+        TOKEN_PATTERNS.put("COMMENT", "@.*");  
+        TOKEN_PATTERNS.put("MULTILINE_COMMENT", "@many@([\\s\\S]*?)@many@");
         TOKEN_PATTERNS.put("DATATYPE", "\\b(digit|decimal|zeroone|abc)\\b");
         TOKEN_PATTERNS.put("BOOLEAN", "\\b(true|false)\\b");
-        TOKEN_PATTERNS.put("DECIMAL", "\\b\\d+\\.\\d{1,5}\\b");  // Max 5 decimal places
+        TOKEN_PATTERNS.put("DECIMAL", "\\b\\d+\\.\\d{1,5}\\b");  
         TOKEN_PATTERNS.put("INTEGER", "\\b\\d+\\b");
-        TOKEN_PATTERNS.put("CHARACTER", "'(.)'");  // Single character inside single quotes
-        TOKEN_PATTERNS.put("OPERATOR", "\\b(eq|add|sub|mul|div|powow|mod)\\b");  // Operators in new language
+        TOKEN_PATTERNS.put("CHARACTER", "'(.)'");  
+        TOKEN_PATTERNS.put("OPERATOR", "\\b(eq|add|sub|mul|div|powow|mod)\\b");  
         TOKEN_PATTERNS.put("IDENTIFIER", "_[a-z]+_");
         TOKEN_PATTERNS.put("BRACKET", "[(){};,]");
-        TOKEN_PATTERNS.put("WHITESPACE", "\\s+");  // Ignored
+        TOKEN_PATTERNS.put("WHITESPACE", "\\s+");  
     }
 
     public static List<Token> tokenize(String code) {
@@ -27,7 +28,6 @@ public class LexicalAnalyzer {
         List<int[]> multiLineCommentRanges = new ArrayList<>();
         String lastDatatype = null;
 
-        // Process multi-line comments first
         Pattern multiLineCommentPattern = Pattern.compile("@many@([\\s\\S]*?)@many@", Pattern.MULTILINE);
         Matcher multiLineMatcher = multiLineCommentPattern.matcher(code);
 
@@ -56,7 +56,6 @@ public class LexicalAnalyzer {
                 continue;
             }
 
-            // Check for single-line comments before processing the rest of the line
             Pattern commentPattern = Pattern.compile("@.*");
             Matcher commentMatcher = commentPattern.matcher(lines[i]);
 
@@ -64,7 +63,7 @@ public class LexicalAnalyzer {
                 String comment = commentMatcher.group();
                 tokens.add(new Token("COMMENT", comment, lineNumber));
                 lineNumber++;
-                continue; // Skip processing other tokens in this line
+                continue; 
             }
 
             int pos = 0;
@@ -97,14 +96,20 @@ public class LexicalAnalyzer {
                 }
 
                 if (!matched) {
-                    System.out.println("Error: Unrecognized token at line " + lineNumber + " near: " + lines[i].charAt(pos));
+                	
+                    String errorMessage = "Unrecognized token near: '" + lines[i].charAt(pos) + "'";
+                    ErrorHandler.addError(lineNumber, errorMessage);
                     pos++;
                 }
             }
             lineNumber++;
         }
         return tokens;
-     }
+    }
+
+    public static void displayErrors() {
+        ErrorHandler.displayErrors();
+    }
 
     
     public static void displayDFAForTokens() {

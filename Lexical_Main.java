@@ -12,7 +12,9 @@ public class Lexical_Main {
 
             // Tokenize file contents
             List<Token> tokens = LexicalAnalyzer.tokenize(input);
-
+            
+            // Display errors
+            LexicalAnalyzer.displayErrors();
             // Display Tokens
             System.out.println("\n-- Tokenized Output --");
             tokens.forEach(System.out::println);
