@@ -1,7 +1,8 @@
 
-digit _var_ eq 3
+digit _var_ eq 3;
+digit _bat_ eq 3;
 
-digit _main_() {
+digit main() {
 
 	@ This is a comment
 	@many@
@@ -14,13 +15,15 @@ digit _main_() {
 	zeroone _flag_ eq true;
 	abc _letter_  eq 'A';
 
-	digit _x_ add _y_;
+	digit _x_ add _y_;{	abc _letter_  eq 'A';}
 	digit _result_ eq _x_ 	@many@
 	   This is a
 	   multi-line comment.
-	@many@powow _y_;
+	@many@ digit _air_ eq 45;
 	come._d_;
 	go._y_;
 	{ ; }
 
 }
+
+{decimal _yea_ eq 3}

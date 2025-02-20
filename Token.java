@@ -1,6 +1,5 @@
 package example_1;
 
-// ✅ Token class to store tokens
 class Token {
     String type, value;
     int line;

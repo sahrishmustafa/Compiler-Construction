@@ -45,6 +45,7 @@ class SymbolTable {
 
     public void printSymbolTable() {
         System.out.println("--Symbol Table--");
+        System.out.println("--Global Variables--");
         System.out.println("Scope Level | Identifier | Type");
         System.out.println("---------------------------------");
 
@@ -60,7 +61,7 @@ class SymbolTable {
 
         // Print Popped (Exited) Scopes
         if (!poppedScopes.isEmpty()) {
-            System.out.println("\n--Exited Scopes--");
+            System.out.println("\n--Exited(Local) Scopes--");
             System.out.println("Scope Level | Identifier | Type");
             System.out.println("---------------------------------");
 

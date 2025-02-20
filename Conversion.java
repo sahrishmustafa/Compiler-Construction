@@ -1,5 +1,4 @@
 package example_1;
-
 import dk.brics.automaton.*;
 
 class Conversion {
