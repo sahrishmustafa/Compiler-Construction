@@ -99,10 +99,10 @@ The language provides functions for input and output:
    - This function takes input and stores it in `_y_`.
 
 ## Main Function
-Every program must have a `digit _main_()` function, which acts as the entry point:
+Every program must have a `digit main()` function, which acts as the entry point:
 
 ``` 
-digit _main_(){
+digit main(){
    @ This is the main function
    digit _num1_ eq 5;
    digit _num2_ eq 3;
@@ -115,7 +115,7 @@ digit _main_(){
 Below is a complete example demonstrating the features:
 
 ``` 
-digit _main_(){
+digit main(){
 
    @ This program demonstrates basic operations
 
