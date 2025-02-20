@@ -20,8 +20,8 @@ public class Lexical_Main {
             tokens.forEach(System.out::println);
 
             // Display Symbol Table
-            LexicalAnalyzer.symbolTable.display();
-            LexicalAnalyzer.displayDFAForTokens();
+            LexicalAnalyzer.symbolTable.printSymbolTable();
+            //LexicalAnalyzer.displayDFAForTokens();
             
         } catch (IOException e) {
             System.err.println("Error reading file: " + e.getMessage());
