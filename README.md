@@ -88,13 +88,13 @@ The language provides functions for input and output:
 
 1. **Output (`come` function):**
    ```
-   come._d_;
+   go._d_;
    ```
    - This function prints the value of `_d_` to the console.
 
 2. **Input (`go` function):**
    ```
-   go._y_;
+   come._y_;
    ```
    - This function takes input and stores it in `_y_`.
 
