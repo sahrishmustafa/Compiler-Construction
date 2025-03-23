@@ -1,1 +1,4 @@
 A -> xy | xz | xyz | w
+B -> Cxy | x
+C -> Dyx
+D -> Bw | yy
