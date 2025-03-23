@@ -1,4 +1,4 @@
-A -> xy | xz | xyz | w
-B -> Cxy | x
-C -> Dyx
-D -> Bw | yy
+S  -> A a | B b | C c  
+A  -> C d | C e | f  
+B  -> g h | g i | j  
+C  -> S x | S y | k
