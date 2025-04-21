@@ -1,0 +1,71 @@
+
+Original Context-Free Grammar:
+A -> xy | xz | xyz | w
+B -> Cxy | x
+C -> Dyx
+D -> Bw | yy
+
+
+Checking for left factoring...
+Starting Left Factoring Removal...
+Left Factoring Removal Completed.
+
+Grammar after Left Factoring Removal:
+A -> w | x A'
+A' -> y A''' | z
+A''' -> % | z
+B -> Cxy | x
+C -> Dyx
+D -> Bw | yy
+
+
+Removing Left Recursion...
+Starting Left Recursion Removal...
+Left Recursion Removal Completed.
+
+Grammar after Left Recursion Removal:
+A -> w | x A'
+A' -> y A''' | z
+A''' -> % | z
+B -> Cxy | x
+C -> Dyx
+D -> x w D' | yy D'
+D' -> yx xy w D' | %
+
+Final Grammar after merging duplicate productions:
+A -> w | x A'
+A' -> y A''' | z
+A''' -> % | z
+B -> C x y | x
+C -> D y x
+D -> x w D' | y y D'
+D' -> % | y x x y w D'
+
+FIRST Sets:
+FIRST(A) = { w x }
+FIRST(A') = { y z }
+FIRST(A''') = { % z }
+FIRST(B) = { x y }
+FIRST(C) = { x y }
+FIRST(D) = { x y }
+FIRST(D') = { % y }
+
+FOLLOW Sets:
+FOLLOW(A) = { $ }
+FOLLOW(A') = { $ }
+FOLLOW(A''') = { $ }
+FOLLOW(B) = { }
+FOLLOW(C) = { x }
+FOLLOW(D) = { y }
+FOLLOW(D') = { y }
+
+LL(1) Parsing Table:
+NT      %       w       x       y       z       
+------------------------------------------------
+A               w       x A'                    
+A'                              y A'''  z       
+A'''    %                               z       
+B                       x       C x y           
+C                       D y x   D y x           
+D                       x w D'  y y D'          
+D'      %                       y x x y w D'        
